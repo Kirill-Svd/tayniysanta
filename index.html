@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тайный Санта 🎅</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <!-- Экран входа -->
+    <div id="loginScreen" class="screen active">
+        <div class="container">
+            <div class="snowflakes">
+                <div class="snowflake">❄</div>
+                <div class="snowflake">❄</div>
+                <div class="snowflake">❄</div>
+                <div class="snowflake">❄</div>
+                <div class="snowflake">❄</div>
+                <div class="snowflake">❄</div>
+            </div>
+            <h1 class="title">🎅 Тайный Санта</h1>
+            <div class="tree-decoration">🎄</div>
+            <form id="loginForm" class="form">
+                <input 
+                    type="text" 
+                    id="passwordInput" 
+                    class="input" 
+                    placeholder="Введите пароль"
+                    autocomplete="off"
+                    required
+                >
+                <button type="submit" class="btn btn-primary">Войти</button>
+            </form>
+            <div id="loginError" class="error-message"></div>
+        </div>
+    </div>
+
+    <!-- Экран пользователя -->
+    <div id="userScreen" class="screen">
+        <div class="container">
+            <div class="snowflakes">
+                <div class="snowflake">❄</div>
+                <div class="snowflake">❄</div>
+                <div class="snowflake">❄</div>
+                <div class="snowflake">❄</div>
+                <div class="snowflake">❄</div>
+                <div class="snowflake">❄</div>
+            </div>
+            <h1 class="title">🎅 Тайный Санта</h1>
+            <div class="user-info">
+                <p class="welcome-text">Привет, <span id="userName"></span>! 👋</p>
+            </div>
+            
+            <!-- Статус игры -->
+            <div id="gameStatus" class="status-box">
+                <p id="statusText"></p>
+            </div>
+
+            <!-- Кнопки действий -->
+            <div class="actions">
+                <button id="orderGiftBtn" class="btn btn-action">
+                    🎁 Заказать подарок
+                </button>
+                <button id="viewGiftBtn" class="btn btn-action">
+                    🎅 Кому и что я дарю
+                </button>
+                <button id="rulesBtn" class="btn btn-action">
+                    📜 Правила
+                </button>
+                <button id="logoutBtn" class="btn btn-secondary">
+                    Выйти
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Экран админа -->
+    <div id="adminScreen" class="screen">
+        <div class="container">
+            <div class="snowflakes">
+                <div class="snowflake">❄</div>
+                <div class="snowflake">❄</div>
+                <div class="snowflake">❄</div>
+                <div class="snowflake">❄</div>
+                <div class="snowflake">❄</div>
+                <div class="snowflake">❄</div>
+            </div>
+            <h1 class="title">🛠️ Админ-панель</h1>
+            
+            <!-- Статус игры -->
+            <div id="adminStatus" class="status-box">
+                <p id="adminStatusText"></p>
+            </div>
+
+            <!-- Добавление участника -->
+            <div class="admin-section">
+                <h2>➕ Добавить участника</h2>
+                <form id="addUserForm" class="form">
+                    <input 
+                        type="text" 
+                        id="newUserName" 
+                        class="input" 
+                        placeholder="Имя участника"
+                        required
+                    >
+                    <input 
+                        type="text" 
+                        id="newUserPassword" 
+                        class="input" 
+                        placeholder="Пароль (или оставьте пустым для автогенерации)"
+                    >
+                    <button type="submit" class="btn btn-primary">Добавить</button>
+                </form>
+            </div>
+
+            <!-- Список участников -->
+            <div class="admin-section">
+                <h2>👥 Участники (<span id="participantsCount">0</span>)</h2>
+                <div id="participantsList" class="participants-list"></div>
+            </div>
+
+            <!-- Распределение -->
+            <div class="admin-section">
+                <h2>🎲 Распределение</h2>
+                <button id="runDistributionBtn" class="btn btn-primary btn-large">
+                    Запустить распределение
+                </button>
+                <div id="distributionError" class="error-message"></div>
+            </div>
+
+            <button id="adminLogoutBtn" class="btn btn-secondary">Выйти</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно заказа подарка -->
+    <div id="giftModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>🎁 Заказать подарок</h2>
+            <form id="giftForm" class="form">
+                <label>Описание подарка:</label>
+                <textarea 
+                    id="giftText" 
+                    class="textarea" 
+                    placeholder="Опишите, какой подарок вы хотели бы получить..."
+                    required
+                    maxlength="500"
+                ></textarea>
+                <label>Ссылка на подарок (необязательно):</label>
+                <input 
+                    type="url" 
+                    id="giftLink" 
+                    class="input" 
+                    placeholder="https://..."
+                >
+                <p class="hint">Максимальная стоимость: <span id="maxPrice"></span> ₽</p>
+                <div id="giftFormError" class="error-message"></div>
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно просмотра подарка -->
+    <div id="viewGiftModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>🎅 Кому и что я дарю</h2>
+            <div id="giftInfo" class="gift-info">
+                <p class="info-text">Загрузка...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно правил -->
+    <div id="rulesModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>📜 Правила игры</h2>
+            <div class="rules-content">
+                <p>🎄 Добро пожаловать в игру "Тайный Санта"!</p>
+                <ul>
+                    <li>Каждый участник получает имя того, кому нужно подарить подарок</li>
+                    <li>Никто не дарит подарок самому себе</li>
+                    <li>Закажите подарок, который хотели бы получить</li>
+                    <li>После распределения вы узнаете, кому дарить и что заказали вам</li>
+                    <li>Подготовьте подарок до указанного дедлайна</li>
+                    <li>Максимальная стоимость подарка указана в интерфейсе</li>
+                </ul>
+                <p>🎁 Приятной игры и счастливого Нового года!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно предупреждения -->
+    <div id="warningModal" class="modal">
+        <div class="modal-content">
+            <h2>⚠️ Внимание</h2>
+            <div id="warningMessage" class="warning-message"></div>
+            <button id="warningOkBtn" class="btn btn-primary">Понятно</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
