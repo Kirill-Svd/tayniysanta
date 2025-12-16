@@ -1,0 +1,471 @@
+/* Новогодний дизайн - красно-зелёная палитра */
+:root {
+    --primary-red: #c41e3a;
+    --primary-green: #228b22;
+    --dark-green: #006400;
+    --light-red: #ff6b6b;
+    --snow-white: #fffafa;
+    --gold: #ffd700;
+    --dark-bg: #0a2e0a;
+    --light-bg: #f0fff0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, var(--dark-bg) 0%, #1a4a1a 100%);
+    color: var(--snow-white);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Анимация снежинок */
+.snowflakes {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.snowflake {
+    position: absolute;
+    color: var(--snow-white);
+    font-size: 1.5em;
+    animation: fall linear infinite;
+    opacity: 0.7;
+}
+
+.snowflake:nth-child(1) {
+    left: 10%;
+    animation-duration: 10s;
+    animation-delay: 0s;
+}
+
+.snowflake:nth-child(2) {
+    left: 30%;
+    animation-duration: 12s;
+    animation-delay: 2s;
+}
+
+.snowflake:nth-child(3) {
+    left: 50%;
+    animation-duration: 14s;
+    animation-delay: 4s;
+}
+
+.snowflake:nth-child(4) {
+    left: 70%;
+    animation-duration: 11s;
+    animation-delay: 1s;
+}
+
+.snowflake:nth-child(5) {
+    left: 85%;
+    animation-duration: 13s;
+    animation-delay: 3s;
+}
+
+.snowflake:nth-child(6) {
+    left: 95%;
+    animation-duration: 15s;
+    animation-delay: 5s;
+}
+
+@keyframes fall {
+    0% {
+        transform: translateY(-100vh) rotate(0deg);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Контейнер */
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+    z-index: 2;
+}
+
+/* Экраны */
+.screen {
+    display: none;
+    min-height: 100vh;
+    padding: 20px 0;
+}
+
+.screen.active {
+    display: block;
+}
+
+/* Заголовок */
+.title {
+    text-align: center;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    color: var(--gold);
+}
+
+.tree-decoration {
+    text-align: center;
+    font-size: 4em;
+    margin: 20px 0;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Формы */
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.input, .textarea {
+    padding: 15px;
+    border: 2px solid var(--primary-green);
+    border-radius: 10px;
+    background: var(--snow-white);
+    color: var(--dark-bg);
+    font-size: 1em;
+    transition: all 0.3s;
+}
+
+.input:focus, .textarea:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.textarea {
+    min-height: 120px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+/* Кнопки */
+.btn {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-red), var(--light-red));
+    color: var(--snow-white);
+    box-shadow: 0 4px 15px rgba(196, 30, 58, 0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(196, 30, 58, 0.6);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-action {
+    background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+    color: var(--snow-white);
+    width: 100%;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 15px rgba(34, 139, 34, 0.4);
+}
+
+.btn-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(34, 139, 34, 0.6);
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--snow-white);
+    border: 2px solid var(--snow-white);
+    width: 100%;
+    margin-top: 20px;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.btn-large {
+    width: 100%;
+    padding: 20px;
+    font-size: 1.3em;
+}
+
+/* Информация пользователя */
+.user-info {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.welcome-text {
+    font-size: 1.3em;
+    color: var(--gold);
+}
+
+/* Статус игры */
+.status-box {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--primary-green);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+    text-align: center;
+    backdrop-filter: blur(10px);
+}
+
+.status-box p {
+    font-size: 1.1em;
+    line-height: 1.6;
+}
+
+/* Действия */
+.actions {
+    margin-top: 30px;
+}
+
+/* Админ-панель */
+.admin-section {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--primary-red);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+    backdrop-filter: blur(10px);
+}
+
+.admin-section h2 {
+    color: var(--gold);
+    margin-bottom: 15px;
+    font-size: 1.5em;
+}
+
+/* Список участников */
+.participants-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 15px;
+}
+
+.participant-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.participant-name {
+    font-weight: bold;
+}
+
+.participant-password {
+    font-family: monospace;
+    color: var(--gold);
+    font-size: 0.9em;
+}
+
+/* Модальные окна */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+}
+
+.modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, var(--dark-bg), #1a4a1a);
+    border: 3px solid var(--primary-green);
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 90%;
+    width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+}
+
+.modal-content h2 {
+    color: var(--gold);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.close {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 2em;
+    font-weight: bold;
+    color: var(--snow-white);
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.close:hover {
+    color: var(--gold);
+}
+
+/* Информация о подарке */
+.gift-info {
+    margin-top: 20px;
+}
+
+.info-text {
+    font-size: 1.1em;
+    line-height: 1.8;
+    margin: 10px 0;
+}
+
+.gift-recipient {
+    background: rgba(34, 139, 34, 0.3);
+    padding: 15px;
+    border-radius: 10px;
+    margin: 15px 0;
+    border-left: 4px solid var(--primary-green);
+}
+
+.gift-request {
+    background: rgba(196, 30, 58, 0.3);
+    padding: 15px;
+    border-radius: 10px;
+    margin: 15px 0;
+    border-left: 4px solid var(--primary-red);
+}
+
+.gift-link {
+    color: var(--gold);
+    text-decoration: none;
+    word-break: break-all;
+}
+
+.gift-link:hover {
+    text-decoration: underline;
+}
+
+/* Правила */
+.rules-content {
+    line-height: 1.8;
+    font-size: 1.1em;
+}
+
+.rules-content ul {
+    margin: 15px 0;
+    padding-left: 25px;
+}
+
+.rules-content li {
+    margin: 10px 0;
+}
+
+/* Сообщения об ошибках */
+.error-message {
+    color: var(--light-red);
+    text-align: center;
+    margin-top: 10px;
+    font-weight: bold;
+    display: none;
+}
+
+.error-message.active {
+    display: block;
+}
+
+/* Подсказки */
+.hint {
+    color: var(--gold);
+    font-size: 0.9em;
+    text-align: center;
+    margin: 10px 0;
+}
+
+/* Предупреждение */
+.warning-message {
+    font-size: 1.2em;
+    line-height: 1.8;
+    text-align: center;
+    margin: 20px 0;
+    color: var(--snow-white);
+}
+
+/* Адаптивность */
+@media (max-width: 600px) {
+    .title {
+        font-size: 2em;
+    }
+    
+    .modal-content {
+        width: 95%;
+        padding: 20px;
+    }
+    
+    .container {
+        padding: 15px;
+    }
+}
+
+/* Скроллбар */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-green);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--dark-green);
+}
