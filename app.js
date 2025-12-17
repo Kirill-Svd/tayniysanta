@@ -1,9 +1,9 @@
 // Конфигурация приложения
 const CONFIG = {
     // URL вашего Google Apps Script Web App (замените на свой после деплоя)
-    API_URL: 'https://script.google.com/macros/s/AKfycbx8jKM9AS7VgvB1V5QfZQivFTrtprdzzS95DH5K7BhZJin_P3fyO5PlNg9WTCbjIXt7xQ/exec',
+    API_URL: 'https://script.google.com/macros/s/AKfycby44teiT77M-6OHrVzZPd6B73tGzMObDPn7a67Uch5UdVKeVTyqzh_5rMEFcUCHGR1qEQ/exec',
     // Максимальная стоимость подарка (вынесено в переменную)
-    MAX_GIFT_PRICE: 2000
+    MAX_GIFT_PRICE: 1000
 };
 
 // Состояние приложения
@@ -91,6 +91,26 @@ function setupModalListeners() {
 }
 
 /**
+ * Универсальная функция для API запросов к Google Apps Script
+ */
+async function apiRequest(params) {
+    // Формируем URL с параметрами (GET запрос лучше работает с Google Apps Script)
+    const url = new URL(CONFIG.API_URL);
+    Object.keys(params).forEach(key => {
+        if (params[key] !== undefined && params[key] !== null) {
+            url.searchParams.append(key, params[key]);
+        }
+    });
+    
+    const response = await fetch(url.toString(), {
+        method: 'GET',
+        redirect: 'follow'
+    });
+    
+    return await response.json();
+}
+
+/**
  * Обработка входа
  */
 async function handleLogin(e) {
@@ -106,18 +126,10 @@ async function handleLogin(e) {
     
     try {
         // Вызов API для входа
-        const response = await fetch(CONFIG.API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                action: 'login',
-                password: password
-            })
+        const data = await apiRequest({
+            action: 'login',
+            password: password
         });
-        
-        const data = await response.json();
         
         if (data.success) {
             appState.password = password;
@@ -151,18 +163,10 @@ async function handleLogin(e) {
 async function loadUserData() {
     try {
         // Получение данных пользователя
-        const userResponse = await fetch(CONFIG.API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                action: 'getUserData',
-                password: appState.password
-            })
+        const userData = await apiRequest({
+            action: 'getUserData',
+            password: appState.password
         });
-        
-        const userData = await userResponse.json();
         
         if (userData.success) {
             appState.currentUser = userData.user;
@@ -184,17 +188,9 @@ async function loadUserData() {
  */
 async function updateGameStatus() {
     try {
-        const response = await fetch(CONFIG.API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                action: 'getStatus'
-            })
+        const data = await apiRequest({
+            action: 'getStatus'
         });
-        
-        const data = await response.json();
         
         if (data.success) {
             appState.gameStatus = data.status;
@@ -280,20 +276,12 @@ async function handleSubmitGift(e) {
     }
     
     try {
-        const response = await fetch(CONFIG.API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                action: 'submitGift',
-                password: appState.password,
-                text: text,
-                link: link
-            })
+        const data = await apiRequest({
+            action: 'submitGift',
+            password: appState.password,
+            text: text,
+            link: link
         });
-        
-        const data = await response.json();
         
         if (data.success) {
             // Обновление данных пользователя
@@ -328,18 +316,10 @@ async function handleViewGift() {
     }
     
     try {
-        const response = await fetch(CONFIG.API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                action: 'getUserData',
-                password: appState.password
-            })
+        const data = await apiRequest({
+            action: 'getUserData',
+            password: appState.password
         });
-        
-        const data = await response.json();
         
         if (data.success) {
             const user = data.user;
@@ -393,17 +373,9 @@ async function loadAdminData() {
  */
 async function updateAdminStatus() {
     try {
-        const response = await fetch(CONFIG.API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                action: 'getStatus'
-            })
+        const data = await apiRequest({
+            action: 'getStatus'
         });
-        
-        const data = await response.json();
         
         if (data.success) {
             const statusDiv = document.getElementById('adminStatus');
@@ -432,18 +404,10 @@ async function updateAdminStatus() {
  */
 async function loadParticipants() {
     try {
-        const response = await fetch(CONFIG.API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                action: 'getParticipants',
-                adminPassword: appState.password
-            })
+        const data = await apiRequest({
+            action: 'getParticipants',
+            adminPassword: appState.password
         });
-        
-        const data = await response.json();
         
         if (data.success) {
             const participantsList = document.getElementById('participantsList');
@@ -482,20 +446,12 @@ async function handleAddUser(e) {
     }
     
     try {
-        const response = await fetch(CONFIG.API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                action: 'addUser',
-                adminPassword: appState.password,
-                name: name,
-                password: password || null // Если пусто, сгенерируется автоматически
-            })
+        const data = await apiRequest({
+            action: 'addUser',
+            adminPassword: appState.password,
+            name: name,
+            password: password || '' // Если пусто, сгенерируется автоматически
         });
-        
-        const data = await response.json();
         
         if (data.success) {
             // Очистка формы
@@ -527,18 +483,10 @@ async function handleRunDistribution() {
     hideError(errorDiv);
     
     try {
-        const response = await fetch(CONFIG.API_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                action: 'runDistribution',
-                adminPassword: appState.password
-            })
+        const data = await apiRequest({
+            action: 'runDistribution',
+            adminPassword: appState.password
         });
-        
-        const data = await response.json();
         
         if (data.success) {
             // Обновление статуса
