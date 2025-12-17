@@ -91,14 +91,27 @@ function setupModalListeners() {
 }
 
 /**
+ * Показать индикатор загрузки
+ */
+function showLoading() {
+    document.getElementById('loadingOverlay').classList.add('active');
+}
+
+/**
+ * Скрыть индикатор загрузки
+ */
+function hideLoading() {
+    document.getElementById('loadingOverlay').classList.remove('active');
+}
+
+/**
  * Универсальная функция для API запросов к Google Apps Script
  */
 async function apiRequest(params) {
-    // Формируем URL с параметрами (GET запрос лучше работает с Google Apps Script)
     const url = new URL(CONFIG.API_URL);
     Object.keys(params).forEach(key => {
-        if (params[key] !== undefined && params[key] !== null) {
-            url.searchParams.append(key, params[key]);
+        if (params[key] !== undefined && params[key] !== null && params[key] !== '') {
+            url.searchParams.append(key, String(params[key]));
         }
     });
     
@@ -125,6 +138,7 @@ async function handleLogin(e) {
     }
     
     try {
+        showLoading();
         // Вызов API для входа
         const data = await apiRequest({
             action: 'login',
@@ -154,6 +168,8 @@ async function handleLogin(e) {
     } catch (error) {
         console.error('Ошибка входа:', error);
         showError(errorDiv, 'Ошибка соединения. Проверьте настройки API.');
+    } finally {
+        hideLoading();
     }
 }
 
@@ -162,6 +178,7 @@ async function handleLogin(e) {
  */
 async function loadUserData() {
     try {
+        showLoading();
         // Получение данных пользователя
         const userData = await apiRequest({
             action: 'getUserData',
@@ -180,6 +197,8 @@ async function loadUserData() {
         }
     } catch (error) {
         console.error('Ошибка загрузки данных:', error);
+    } finally {
+        hideLoading();
     }
 }
 
@@ -276,6 +295,7 @@ async function handleSubmitGift(e) {
     }
     
     try {
+        showLoading();
         const data = await apiRequest({
             action: 'submitGift',
             password: appState.password,
@@ -302,6 +322,8 @@ async function handleSubmitGift(e) {
     } catch (error) {
         console.error('Ошибка сохранения подарка:', error);
         showError(errorDiv, 'Ошибка соединения');
+    } finally {
+        hideLoading();
     }
 }
 
@@ -316,6 +338,7 @@ async function handleViewGift() {
     }
     
     try {
+        showLoading();
         const data = await apiRequest({
             action: 'getUserData',
             password: appState.password
@@ -350,6 +373,8 @@ async function handleViewGift() {
     } catch (error) {
         console.error('Ошибка загрузки подарка:', error);
         showWarning('Ошибка соединения');
+    } finally {
+        hideLoading();
     }
 }
 
@@ -364,8 +389,13 @@ function showRulesModal() {
  * Загрузка данных админа
  */
 async function loadAdminData() {
-    await updateAdminStatus();
-    await loadParticipants();
+    try {
+        showLoading();
+        await updateAdminStatus();
+        await loadParticipants();
+    } finally {
+        hideLoading();
+    }
 }
 
 /**
@@ -403,31 +433,27 @@ async function updateAdminStatus() {
  * Загрузка списка участников
  */
 async function loadParticipants() {
-    try {
-        const data = await apiRequest({
-            action: 'getParticipants',
-            adminPassword: appState.password
-        });
+    const data = await apiRequest({
+        action: 'getParticipants',
+        adminPassword: appState.password
+    });
+    
+    if (data.success) {
+        const participantsList = document.getElementById('participantsList');
+        const count = document.getElementById('participantsCount');
         
-        if (data.success) {
-            const participantsList = document.getElementById('participantsList');
-            const count = document.getElementById('participantsCount');
-            
-            count.textContent = data.participants.length;
-            
-            if (data.participants.length === 0) {
-                participantsList.innerHTML = '<p class="info-text">Участников пока нет</p>';
-            } else {
-                participantsList.innerHTML = data.participants.map(p => `
-                    <div class="participant-item">
-                        <span class="participant-name">${p.name}</span>
-                        <span class="participant-password">${p.password}</span>
-                    </div>
-                `).join('');
-            }
+        count.textContent = data.participants.length;
+        
+        if (data.participants.length === 0) {
+            participantsList.innerHTML = '<p class="info-text">Участников пока нет</p>';
+        } else {
+            participantsList.innerHTML = data.participants.map(p => `
+                <div class="participant-item">
+                    <span class="participant-name">${p.name}</span>
+                    <span class="participant-password">${p.password}</span>
+                </div>
+            `).join('');
         }
-    } catch (error) {
-        console.error('Ошибка загрузки участников:', error);
     }
 }
 
@@ -446,6 +472,7 @@ async function handleAddUser(e) {
     }
     
     try {
+        showLoading();
         const data = await apiRequest({
             action: 'addUser',
             adminPassword: appState.password,
@@ -467,6 +494,8 @@ async function handleAddUser(e) {
     } catch (error) {
         console.error('Ошибка добавления участника:', error);
         alert('Ошибка соединения');
+    } finally {
+        hideLoading();
     }
 }
 
@@ -483,6 +512,7 @@ async function handleRunDistribution() {
     hideError(errorDiv);
     
     try {
+        showLoading();
         const data = await apiRequest({
             action: 'runDistribution',
             adminPassword: appState.password
@@ -498,6 +528,8 @@ async function handleRunDistribution() {
     } catch (error) {
         console.error('Ошибка распределения:', error);
         showError(errorDiv, 'Ошибка соединения');
+    } finally {
+        hideLoading();
     }
 }
 
