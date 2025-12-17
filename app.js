@@ -1,7 +1,7 @@
 // Конфигурация приложения
 const CONFIG = {
     // URL вашего Google Apps Script Web App (замените на свой после деплоя)
-    API_URL: 'https://script.google.com/macros/s/AKfycbyyEMC_6_Zir3SyqbAOWqudWykluvMThzpkl4Hv5tINVPSyH1YgnTBp6mtajEsUR1zBtQ/exec',
+    API_URL: 'https://script.google.com/macros/s/AKfycbx8jKM9AS7VgvB1V5QfZQivFTrtprdzzS95DH5K7BhZJin_P3fyO5PlNg9WTCbjIXt7xQ/exec',
     // Максимальная стоимость подарка (вынесено в переменную)
     MAX_GIFT_PRICE: 2000
 };
