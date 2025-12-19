@@ -1,7 +1,7 @@
 // Конфигурация приложения
 const CONFIG = {
     // URL вашего Google Apps Script Web App (замените на свой после деплоя)
-    API_URL: 'https://script.google.com/macros/s/AKfycby44teiT77M-6OHrVzZPd6B73tGzMObDPn7a67Uch5UdVKeVTyqzh_5rMEFcUCHGR1qEQ/exec',
+    API_URL: 'https://script.google.com/macros/s/AKfycby3J_twZ6f-M_cdTri_le6YNbRELOSpAcuI_1eLPk7KNu6Wn_MV_0A8q4www6KCF1H0Mg/exec',
     // Максимальная стоимость подарка (вынесено в переменную)
     MAX_GIFT_PRICE: 1000
 };
@@ -331,70 +331,51 @@ async function handleSubmitGift(e) {
  * Обработка просмотра подарка
  */
 async function handleViewGift() {
-    // Проверка статуса распределения
     if (!appState.gameStatus || !appState.gameStatus.isDistributed) {
-        showWarning('Ожидайте распределения. Администратор еще не запустил распределение участников.');
+        showWarning('Ожидайте распределения. Администратор ещё не запустил распределение.');
         return;
     }
 
     try {
         showLoading();
 
-        // 1️⃣ Получаем данные текущего пользователя
-        const dataUser = await apiRequest({
-            action: 'getUserData',
+        const data = await apiRequest({
+            action: 'getRecipient',
             password: appState.password
         });
 
-        // 2️⃣ Получаем СПИСОК ВСЕХ пользователей
-        const dataAll = await apiRequest({
-            action: 'getParticipants',
-            adminPassword: appState.password // если надо без админского — скажи, поменяю
-        });
+        const giftInfo = document.getElementById('giftInfo');
 
-        if (dataUser.success && dataAll.success) {
-            const user = dataUser.user;
-            const allUsers = dataAll.participants;
-
-            // 3️⃣ Находим того, кому мы дарим
-            const recipient = allUsers.find(u => u.name === user.assigned_to);
-
-            const giftInfo = document.getElementById('giftInfo');
-
-            if (!recipient) {
-                giftInfo.innerHTML = `
-                    <p class="info-text">Ошибка: не найден пользователь, которому вы дарите подарок.</p>
-                `;
-            } else {
-                // 4️⃣ Показываем инфу правильно
-                giftInfo.innerHTML = `
-                    <div class="gift-recipient">
-                        <p><strong>🎁 Вы дарите подарок:</strong></p>
-                        <p class="info-text">${recipient.name}</p>
-                    </div>
-
-                    <div class="gift-request">
-                        <p><strong>🎅 Этот человек заказал:</strong></p>
-                        <p class="info-text">${recipient.gift_request || 'Описание не указано'}</p>
-                        ${recipient.gift_link
-                            ? `<p class="info-text">Ссылка: <a href="${recipient.gift_link}" target="_blank" class="gift-link">${recipient.gift_link}</a></p>`
-                            : ''
-                        }
-                    </div>
-                `;
-            }
-
-            showModal('viewGiftModal');
-        } else {
-            showWarning(dataUser.message || 'Ошибка загрузки данных');
+        if (!data.success) {
+            showWarning(data.message || 'Ошибка загрузки данных');
+            return;
         }
+
+        const r = data.recipient;
+
+        giftInfo.innerHTML = `
+            <div class="gift-recipient">
+                <p><strong>🎁 Вы дарите подарок:</strong></p>
+                <p class="info-text">${r.name}</p>
+            </div>
+
+            <div class="gift-request">
+                <p><strong>🎅 Этот человек заказал:</strong></p>
+                <p class="info-text">${r.gift_request || 'Описание не указано'}</p>
+                ${r.gift_link ? `<p class="info-text">Ссылка: <a href="${r.gift_link}" target="_blank" class="gift-link">${r.gift_link}</a></p>` : ''}
+            </div>
+        `;
+
+        showModal('viewGiftModal');
+
     } catch (error) {
-        console.error('Ошибка загрузки подарка:', error);
+        console.error(error);
         showWarning('Ошибка соединения');
     } finally {
         hideLoading();
     }
 }
+
 
 
 /**
