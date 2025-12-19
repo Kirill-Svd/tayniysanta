@@ -348,18 +348,19 @@ async function handleViewGift() {
             const user = data.user;
             const giftInfo = document.getElementById('giftInfo');
             
-            if (user.assigned_to && user.received_from) {
+            if (user.assigned_to && allUsers) {
+                // Найти объект userAssigned
+                let userAssigned = allUsers.find(u => u.name === user.assigned_to);
+            
                 giftInfo.innerHTML = `
                     <div class="gift-recipient">
                         <p><strong>🎁 Вы дарите подарок:</strong></p>
                         <p class="info-text">${user.assigned_to}</p>
                     </div>
                     <div class="gift-request">
-                        <p><strong>🎅 Вам заказали подарок:</strong></p>
-                        <p class="info-text">${user.received_from.gift_request || 'Описание не указано'}</p>
-                        ${user.received_from.gift_link ? 
-                            `<p class="info-text">Ссылка: <a href="${user.received_from.gift_link}" target="_blank" class="gift-link">${user.received_from.gift_link}</a></p>` 
-                            : ''}
+                        <p><strong>🎅 Для этого человека заказан подарок:</strong></p>
+                        <p class="info-text">${userAssigned?.gift_request || 'Описание не указано'}</p>
+                        ${userAssigned?.gift_link ? `<p class="info-text">Ссылка: <a href="${userAssigned.gift_link}" target="_blank" class="gift-link">${userAssigned.gift_link}</a></p>` : ''}
                     </div>
                 `;
             } else {
