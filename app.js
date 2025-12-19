@@ -336,40 +336,57 @@ async function handleViewGift() {
         showWarning('Ожидайте распределения. Администратор еще не запустил распределение участников.');
         return;
     }
-    
+
     try {
         showLoading();
-        const data = await apiRequest({
+
+        // 1️⃣ Получаем данные текущего пользователя
+        const dataUser = await apiRequest({
             action: 'getUserData',
             password: appState.password
         });
-        
-        if (data.success) {
-            const user = data.user;
+
+        // 2️⃣ Получаем СПИСОК ВСЕХ пользователей
+        const dataAll = await apiRequest({
+            action: 'getParticipants',
+            adminPassword: appState.password // если надо без админского — скажи, поменяю
+        });
+
+        if (dataUser.success && dataAll.success) {
+            const user = dataUser.user;
+            const allUsers = dataAll.participants;
+
+            // 3️⃣ Находим того, кому мы дарим
+            const recipient = allUsers.find(u => u.name === user.assigned_to);
+
             const giftInfo = document.getElementById('giftInfo');
-            
-            if (user.assigned_to && allUsers) {
-                // Найти объект userAssigned
-                let userAssigned = allUsers.find(u => u.name === user.assigned_to);
-            
+
+            if (!recipient) {
+                giftInfo.innerHTML = `
+                    <p class="info-text">Ошибка: не найден пользователь, которому вы дарите подарок.</p>
+                `;
+            } else {
+                // 4️⃣ Показываем инфу правильно
                 giftInfo.innerHTML = `
                     <div class="gift-recipient">
                         <p><strong>🎁 Вы дарите подарок:</strong></p>
-                        <p class="info-text">${user.assigned_to}</p>
+                        <p class="info-text">${recipient.name}</p>
                     </div>
+
                     <div class="gift-request">
-                        <p><strong>🎅 Для этого человека заказан подарок:</strong></p>
-                        <p class="info-text">${userAssigned?.gift_request || 'Описание не указано'}</p>
-                        ${userAssigned?.gift_link ? `<p class="info-text">Ссылка: <a href="${userAssigned.gift_link}" target="_blank" class="gift-link">${userAssigned.gift_link}</a></p>` : ''}
+                        <p><strong>🎅 Этот человек заказал:</strong></p>
+                        <p class="info-text">${recipient.gift_request || 'Описание не указано'}</p>
+                        ${recipient.gift_link
+                            ? `<p class="info-text">Ссылка: <a href="${recipient.gift_link}" target="_blank" class="gift-link">${recipient.gift_link}</a></p>`
+                            : ''
+                        }
                     </div>
                 `;
-            } else {
-                giftInfo.innerHTML = '<p class="info-text">Информация о распределении пока недоступна.</p>';
             }
-            
+
             showModal('viewGiftModal');
         } else {
-            showWarning(data.message || 'Ошибка загрузки данных');
+            showWarning(dataUser.message || 'Ошибка загрузки данных');
         }
     } catch (error) {
         console.error('Ошибка загрузки подарка:', error);
@@ -378,6 +395,7 @@ async function handleViewGift() {
         hideLoading();
     }
 }
+
 
 /**
  * Показать модальное окно правил
